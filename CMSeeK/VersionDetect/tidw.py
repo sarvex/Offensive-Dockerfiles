@@ -16,8 +16,10 @@ def start(source):
         minor = re.findall(r'minor: (.*?),',source)
         rev = re.findall(r'revision: (.*?),',source)
         if major != [] and minor != [] and rev != []:
-            version = major[0] + '.' + minor[0] + '.' + rev[0]
-            cmseek.success('TiddlyWiki version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected!')
+            version = f'{major[0]}.{minor[0]}.{rev[0]}'
+            cmseek.success(
+                f'TiddlyWiki version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected!'
+            )
         else:
             cmseek.warning('Version detection failed!')
     else:

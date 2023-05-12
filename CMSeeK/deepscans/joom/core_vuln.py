@@ -7,12 +7,12 @@ import os
 import cmseekdb.basic as cmseek
 
 def start(version):
+    vuln_count = 0
+    joom_vulns = []
     if version != '0':
-        vuln_file = os.getcwd() + '/deepscans/joom/database/corevul.txt' # shoutouts to joomscan
+        vuln_file = f'{os.getcwd()}/deepscans/joom/database/corevul.txt'
         if os.path.isfile(vuln_file):
             vuln_detection = '1' # version detection successful and vuln db loaded as well
-            vuln_count = 0
-            joom_vulns = []
             f = open(vuln_file, 'r')
             vuln_db = f.read()
             vulns = vuln_db.split('\n')
@@ -23,15 +23,9 @@ def start(version):
                     vul = vuln.split('|')
                     # print(vul[1])
                     joom_vulns.append(vul[1])
-            return [vuln_detection, vuln_count, joom_vulns]
         else:
             vuln_detection = '3' # version was detected but vulnerability database not found
-            vuln_count = 0
-            joom_vulns = []
-            return [vuln_detection, vuln_count, joom_vulns]
-
     else:
         vuln_detection = '2' # detection failed due to no version info
-        vuln_count = 0
-        joom_vulns = []
-        return [vuln_detection, vuln_count, joom_vulns]
+
+    return [vuln_detection, vuln_count, joom_vulns]

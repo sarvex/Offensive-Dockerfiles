@@ -17,7 +17,9 @@ def start(source):
         if '-' in version:
             version = version.split('-')
             version = version[1].replace(' ', '')
-        cmseek.success('OpenText WSM version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected')
+        cmseek.success(
+            f'OpenText WSM version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected'
+        )
         return version
     else:
         cmseek.error('Version detection failed!')

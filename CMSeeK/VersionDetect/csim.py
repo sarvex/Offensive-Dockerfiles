@@ -15,8 +15,10 @@ def start(ga_content):
         regex = re.search(r'cmsimple_(.*?) (.*?) ', ga_content)
         if regex != []:
             try:
-                version = regex.group(2)
-                cmseek.success('CMSimple version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected')
+                version = regex[2]
+                cmseek.success(
+                    f'CMSimple version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected'
+                )
                 return version
             except Exception as e:
                     cmseek.error('Version detection failed!')
@@ -25,7 +27,9 @@ def start(ga_content):
         regex = re.findall(r'cmsimple (.*)', ga_content)
         if regex != []:
             version = regex[0]
-            cmseek.success('CMSimple version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected')
+            cmseek.success(
+                f'CMSimple version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected'
+            )
         return version
 
     cmseek.error('Version detection failed!')

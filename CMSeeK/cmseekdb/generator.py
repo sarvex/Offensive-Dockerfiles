@@ -19,7 +19,7 @@ class MyHTMLParser(HTMLParser):
                         if a == 'content':
                             global ga, ga_content
                             ga = '1'
-                            ga_content += ' ' + b
+                            ga_content += f' {b}'
 
 def parse(source):
     # clean up ga, ga_content (fix some weird multiple sites scan issue)
@@ -36,85 +36,37 @@ def scan(content):
         return ['0', '']
 
     if 'wordpress' in content:
-        # WordPress
-        r = ['1','wp']
-        return r
-
+        return ['1','wp']
     if 'blogger' in content:
-        # Blogger by google
-        r = ['1','blg']
-        return r
-
+        return ['1','blg']
     if 'ghost' in content:
-        # Ghost CMS
-        r = ['1','ghost']
-        return r
-
+        return ['1','ghost']
     if 'asciidoc' in content:
-        # ASCiiDOC
-        r = ['1','asciid']
-        return r
-
+        return ['1','asciid']
     if 'drupal' in content:
-        # Drupal
-        r = ['1','dru']
-        return r
-
+        return ['1','dru']
     if 'bolt' in content:
-        # Bolt CMS
-        r = ['1','bolt']
-        return r
-
+        return ['1','bolt']
     if 'browsercms' in content:
-        # Browser CMS
-        r = ['1','brcms']
-        return r
-
+        return ['1','brcms']
     if 'ckan' in content:
-        # CKAN
-        r = ['1','ckan']
-        return r
-
+        return ['1','ckan']
     if 'cms made simple' in content:
-        # CMS Made Simple
-        r = ['1','cmds']
-        return r
-
+        return ['1','cmds']
     if 'cmsimple' in content:
-        # CMSimple
-        r = ['1','csim']
-        return r
-
+        return ['1','csim']
     if 'xpressengine' in content:
-        # XpressEngine
-        r = ['1','xe']
-        return r
-
+        return ['1','xe']
     if 'typo3 cms' in content:
-        # TYPO3 CMS
-        r = ['1','tp3']
-        return r
-
+        return ['1','tp3']
     if 'textpattern cms' in content:
-        # Textpattern CMS
-        r = ['1','tpc']
-        return r
-
+        return ['1','tpc']
     if 'ametys cms open source (http://www.ametys.org' in content:
-        # Ametys CMS
-        r = ['1','amcms']
-        return r
-
+        return ['1','amcms']
     if 'joomla! - open source content management' in content or 'Joomla! - the dynamic portal engine and content management system' in content or 'joomla' in content:
-        # Joomla
-        r = ['1', 'joom']
-        return r
-
+        return ['1', 'joom']
     if 'xoops' in content:
-        # XOOPS
-        r = ['1', 'xoops']
-        return r
-
+        return ['1', 'xoops']
     if 'wix.com' in content:
         # Wix Website Builder
         return ['1', 'wix']
@@ -315,8 +267,4 @@ def scan(content):
         # Beehive Forum
         return ['1', 'bhf']
 
-    if 'ubb.threads' in content:
-        # UBB.threads
-        return ['1', 'ubbt']
-
-    return ['0', '']
+    return ['1', 'ubbt'] if 'ubb.threads' in content else ['0', '']

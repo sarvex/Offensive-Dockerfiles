@@ -18,7 +18,9 @@ def start(id, url, ua, ga, source):
         cmseek.statement('Detecting version using generator meta tag [Method 1 of 4]')
         regex_1 = re.findall(r'content=(?:\"|\')Joomla! (.*?) - Open Source Content Management(?:\"|\')', source)
         if regex_1 != []:
-            cmseek.success('Joomla version detected, version: ' + cmseek.bold + regex_1[0] + cmseek.cln)
+            cmseek.success(
+                f'Joomla version detected, version: {cmseek.bold}{regex_1[0]}{cmseek.cln}'
+            )
             return regex_1[0]
 
     if version == '0':
@@ -26,11 +28,13 @@ def start(id, url, ua, ga, source):
         xml_files = ['administrator/manifests/files/joomla.xml','language/en-GB/en-GB.xml','administrator/components/com_content/content.xml','administrator/components/com_plugins/plugins.xml','administrator/components/com_media/media.xml','mambots/content/moscode.xml']
         cmseek.statement('Detecting version using xml files [Method 2 of 4]')
         for xml_file in xml_files:
-            xml_source = cmseek.getsource(url + '/' + xml_file, ua)
+            xml_source = cmseek.getsource(f'{url}/{xml_file}', ua)
             if xml_source[0] == '1':
                 regex_2 = re.findall(r'<version>(.*?)</version>', xml_source[1])
                 if regex_2 != []:
-                    cmseek.success('Joomla version detected, version: ' + cmseek.bold + regex_2[0] + cmseek.cln)
+                    cmseek.success(
+                        f'Joomla version detected, version: {cmseek.bold}{regex_2[0]}{cmseek.cln}'
+                    )
                     return regex_2[0]
 
     # Detection method 3
@@ -38,12 +42,14 @@ def start(id, url, ua, ga, source):
         other_files = ['language/en-GB/en-GB.xml','templates/system/css/system.css','media/system/js/mootools-more.js','language/en-GB/en-GB.ini','htaccess.txt','language/en-GB/en-GB.com_media.ini']
         cmseek.statement('Detecting version using advanced fingerprinting [Method 3 of 4]')
         for file in other_files:
-            file_source = cmseek.getsource(url + '/' + file, ua)
+            file_source = cmseek.getsource(f'{url}/{file}', ua)
             if file_source[0] == '1':
                 # Regex find
                 regex_3 = re.findall(r'<meta name="Keywords" content="(.*?)">', file_source[1])
                 if regex_3 != []:
-                    cmseek.success('Joomla version detected, version: ' + cmseek.bold + regex_3[0] + cmseek.cln)
+                    cmseek.success(
+                        f'Joomla version detected, version: {cmseek.bold}{regex_3[0]}{cmseek.cln}'
+                    )
                     return regex_3[0]
 
                 # Joomla version 1.6
@@ -51,7 +57,9 @@ def start(id, url, ua, ga, source):
                 for j in j16:
                     rsearch = re.search(j,file_source[1])
                     if rsearch is not None:
-                        cmseek.success('Joomla version detected, version: ' + cmseek.bold + '1.6' + cmseek.cln)
+                        cmseek.success(
+                            f'Joomla version detected, version: {cmseek.bold}1.6{cmseek.cln}'
+                        )
                         return '1.6'
 
                 # Joomla version 1.5
@@ -59,7 +67,9 @@ def start(id, url, ua, ga, source):
                 for j in j15:
                     rsearch = re.search(j,file_source[1])
                     if rsearch is not None:
-                        cmseek.success('Joomla version detected, version: ' + cmseek.bold + '1.5' + cmseek.cln)
+                        cmseek.success(
+                            f'Joomla version detected, version: {cmseek.bold}1.5{cmseek.cln}'
+                        )
                         return '1.5'
 
                 # Joomla version 1.7
@@ -67,7 +77,9 @@ def start(id, url, ua, ga, source):
                 for j in j17:
                     rsearch = re.search(j,file_source[1])
                     if rsearch is not None:
-                        cmseek.success('Joomla version detected, version: ' + cmseek.bold + '1.7' + cmseek.cln)
+                        cmseek.success(
+                            f'Joomla version detected, version: {cmseek.bold}1.7{cmseek.cln}'
+                        )
                         return '1.7'
 
             # Joomla version 1.0
@@ -75,7 +87,9 @@ def start(id, url, ua, ga, source):
             for j in j10:
                 rsearch = re.search(j,file_source[1])
                 if rsearch is not None:
-                    cmseek.success('Joomla version detected, version: ' + cmseek.bold + '1.0' + cmseek.cln)
+                    cmseek.success(
+                        f'Joomla version detected, version: {cmseek.bold}1.0{cmseek.cln}'
+                    )
                     return '1.0'
 
             # Joomla version 2.5
@@ -83,18 +97,22 @@ def start(id, url, ua, ga, source):
             for j in j25:
                 rsearch = re.search(j,file_source[1])
                 if rsearch is not None:
-                    cmseek.success('Joomla version detected, version: ' + cmseek.bold + '2.5' + cmseek.cln)
+                    cmseek.success(
+                        f'Joomla version detected, version: {cmseek.bold}2.5{cmseek.cln}'
+                    )
                     return '2.5'
 
     # Detection using README file
     if version == '0':
         cmseek.statement('Detecting version from README file [Method 4 of 4]')
-        readme_file = url + '/README.txt'
+        readme_file = f'{url}/README.txt'
         readme_source = cmseek.getsource(readme_file, ua)
         if readme_source[0] == '1':
             regex_4 = re.findall(r'package to version (.*?)', readme_source[1])
             if regex_4 != []:
-                cmseek.success('Joomla version detected, version: ' + cmseek.bold + regex_4[0] + cmseek.cln)
+                cmseek.success(
+                    f'Joomla version detected, version: {cmseek.bold}{regex_4[0]}{cmseek.cln}'
+                )
                 return regex_4[0]
 
     # if we fail ¯\_(ツ)_/¯

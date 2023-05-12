@@ -9,7 +9,7 @@ def target(target):
     ## initiate the result
     target = target.replace('https://','').replace('http://', '').split('/')
     target = target[0]
-    print(' ┏━Target: ' + cmseek.bold + cmseek.red + target + cmseek.cln)
+    print(f' ┏━Target: {cmseek.bold}{cmseek.red}{target}{cmseek.cln}')
 
 def end(requests, time, log_file):
     ## end the result
@@ -19,9 +19,9 @@ def end(requests, time, log_file):
 def cms(cms,version,url):
     ## CMS section
     print(' ┃\n ┠── CMS: ' + cmseek.bold + cmseek.fgreen + cms + cmseek.cln +'\n ┃    │')
-    if version != '0' and version != None:
-        print(' ┃    ├── Version: '+ cmseek.bold + cmseek.fgreen + version + cmseek.cln)
-    print(' ┃    ╰── URL: ' + cmseek.fgreen + url + cmseek.cln)
+    if version not in ['0', None]:
+        print(f' ┃    ├── Version: {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln}')
+    print(f' ┃    ╰── URL: {cmseek.fgreen}{url}{cmseek.cln}')
 
 def menu(content):
     # Use it as a header to start off any new list of item
@@ -33,14 +33,14 @@ def init_item(content):
 
 def item(content):
     # a normal item just not the first or the last one
-    print(' ┃    ├── ' + content)
+    print(f' ┃    ├── {content}')
 
 def empty_item():
     print(' ┃    │')
 
 def end_item(content):
     # The ending item
-    print(' ┃    ╰── ' + content)
+    print(f' ┃    ╰── {content}')
 
 def init_sub(content, slave=True):
     # initiating a list of menu under a item
@@ -48,11 +48,11 @@ def init_sub(content, slave=True):
 
 def sub_item(content, slave=True):
     # a sub item
-    print(' ┃    │    ├── ' + content if slave else ' ┃         ├── ' + content)
+    print(f' ┃    │    ├── {content}' if slave else f' ┃         ├── {content}')
 
 def end_sub(content, slave=True):
     # ending a sub item
-    print(' ┃    │    ╰── ' + content if slave else ' ┃         ╰── ' + content)
+    print(f' ┃    │    ╰── {content}' if slave else f' ┃         ╰── {content}')
 
 def empty_sub(slave=True):
     print(' ┃    │    │' if slave else ' ┃         │')

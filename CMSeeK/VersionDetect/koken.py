@@ -14,7 +14,9 @@ def start(ga_content):
     regex = re.findall(r'koken (.*)', ga_content)
     if regex != []:
         version = regex[0]
-        cmseek.success('Koken version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected')
+        cmseek.success(
+            f'Koken version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected'
+        )
         return version
     else:
         cmseek.error('Version detection failed!')

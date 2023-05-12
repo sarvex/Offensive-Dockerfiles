@@ -6,9 +6,10 @@
 import cmseekdb.basic as cmseek
 # I know there is no reason at all to create a separate module for this.. there's something that's going to be added here so.. trust me!
 def start(source):
-    # print(source)
-    if 'Joomla! Debug Console' in source or 'xdebug.org/docs/all_settings' in source:
-        cmseek.success('Debug mode on!')
-        return '1'
-    else:
+    if (
+        'Joomla! Debug Console' not in source
+        and 'xdebug.org/docs/all_settings' not in source
+    ):
         return '0'
+    cmseek.success('Debug mode on!')
+    return '1'

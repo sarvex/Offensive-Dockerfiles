@@ -16,10 +16,10 @@ def start(source):
     for result in results:
         # found += 1
         name = result[0].replace('-master','').replace('.min','')
-        nc = name + ":"
+        nc = f"{name}:"
         if nc not in str(plugins):
             version = result[1]
-            each_plugin = name + ":" + version
+            each_plugin = f"{name}:{version}"
             plugins.append(each_plugin)
     plugins = set(plugins)
     found = len(plugins)

@@ -16,7 +16,9 @@ def start(url, ua):
         if 'x-generator' in tail:
             regex = re.findall(r'x-generator: Sulu/(.*)', tail)
     if regex != []:
-        cmseek.success('SULU version ' + cmseek.bold + cmseek.fgreen + regex[0] + cmseek.cln + ' detected')
+        cmseek.success(
+            f'SULU version {cmseek.bold}{cmseek.fgreen}{regex[0]}{cmseek.cln} detected'
+        )
         return regex[0]
     else:
         cmseek.error('Version detection failed!')

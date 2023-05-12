@@ -13,9 +13,11 @@ def start(source):
     regex = re.search(r'var config(.*?)"version":"(\d.*?)"', source)
     if regex != None:
         try:
-            version = regex.group(2)
+            version = regex[2]
             if version != "":
-                cmseek.success('NodeBB version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected')
+                cmseek.success(
+                    f'NodeBB version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected'
+                )
                 return version
         except Exception as e:
             cmseek.error('lol detection failed!')

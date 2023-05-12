@@ -6,13 +6,15 @@
 import cmseekdb.basic as cmseek
 
 def start(url,ua):
-    reg_url = url + '/index.php?option=com_users&view=registration'
+    reg_url = f'{url}/index.php?option=com_users&view=registration'
     reg_source = cmseek.getsource(reg_url, ua)
-    if reg_source[0] == '1':
-        if 'registration.register' in reg_source[1] or 'jform_password2' in reg_source[1] or 'jform_email2' in reg_source[1]:
-            cmseek.success('User registration open, ' + cmseek.bold + reg_url + cmseek.cln)
-            return ['1', reg_url]
-        else:
-            return ['0', '']
-    else:
+    if reg_source[0] != '1':
         return ['0', '']
+    if (
+        'registration.register' not in reg_source[1]
+        and 'jform_password2' not in reg_source[1]
+        and 'jform_email2' not in reg_source[1]
+    ):
+        return ['0', '']
+    cmseek.success(f'User registration open, {cmseek.bold}{reg_url}{cmseek.cln}')
+    return ['1', reg_url]

@@ -40,7 +40,6 @@ def main():
 	banner()
 	args = parse_args()
 
-	subdomains = []
 	target = args.domain
 	output = args.output
 
@@ -52,10 +51,7 @@ def main():
 
 	json_data = json.loads('[{}]'.format(req.text.replace('}{', '},{')))
 
-	for (key,value) in enumerate(json_data):
-		subdomains.append(value['name_value'])
-
-	
+	subdomains = [value['name_value'] for value in json_data]
 	print("\n[!] ---- TARGET: {d} ---- [!] \n".format(d=target))
 
 	subdomains = sorted(set(subdomains))

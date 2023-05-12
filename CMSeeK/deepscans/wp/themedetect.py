@@ -18,17 +18,19 @@ def start(source,url,ua):
     for result in results:
         # found += 1
         name = result[0].replace('-master','').replace('.min','')
-        nc = name + ":"
+        nc = f"{name}:"
         if nc not in str(themes):
             version = result[1]
-            each_theme = name + ":" + version + "|"
+            each_theme = f"{name}:{version}|"
             # look if theme zip available
             cmseek.statement('Looking for theme zip file!')
-            theme_zip = url + '/wp-content/themes/' + name + '.zip'
+            theme_zip = f'{url}/wp-content/themes/{name}.zip'
             zip_status = cmseek.check_url(theme_zip, ua)
             if zip_status == '1':
-                cmseek.success('Current theme can be downloaded, URL: ' + cmseek.bold + theme_zip + cmseek.cln)
-                each_theme += '/wp-content/themes/' + name + '.zip'
+                cmseek.success(
+                    f'Current theme can be downloaded, URL: {cmseek.bold}{theme_zip}{cmseek.cln}'
+                )
+                each_theme += f'/wp-content/themes/{name}.zip'
             themes.append(each_theme)
     themes = set(themes)
     found = len(themes)

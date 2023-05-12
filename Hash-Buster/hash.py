@@ -32,41 +32,39 @@ directory = args.dir
 file = args.file
 thread_count = args.threads or 4
 
-if directory:
-    if directory[-1] == '/':
-        directory = directory[:-1]
+if directory and directory[-1] == '/':
+    directory = directory[:-1]
 
 def alpha(hashvalue, hashtype):
-    response = requests.get('https://lea.kz/api/hash/' + hashvalue).text
-    match = re.search(r': "(.*?)"', response)
-    if match:
-        return match.group(1)
-    else:
-        return False
+    response = requests.get(f'https://lea.kz/api/hash/{hashvalue}').text
+    return (
+        match.group(1)
+        if (match := re.search(r': "(.*?)"', response))
+        else False
+    )
 
 def beta(hashvalue, hashtype):
     response = requests.get('http://hashtoolkit.com/reverse-hash/?hash=', hashvalue).text
-    match = re.search(r'/generate-hash/?text=.*?"', response)
-    if match:
-        return match.group(1)
+    if match := re.search(r'/generate-hash/?text=.*?"', response):
+        return match[1]
     else:
         return False
 
 def delta(hashvalue, hashtype):
     data = {'auth':'8272hgt', 'hash':hashvalue, 'string':'','Submit':'Submit'}
     response = requests.post('http://hashcrack.com/index.php' , data).text
-    match = re.search(r'<span class=hervorheb2>(.*?)</span></div></TD>', response)
-    if match:
-        return match.group(1)
+    if match := re.search(
+        r'<span class=hervorheb2>(.*?)</span></div></TD>', response
+    ):
+        return match[1]
     else:
         return False
 
 def theta(hashvalue, hashtype):
-    response = requests.get('http://md5decrypt.net/Api/api.php?hash=%s&hash_type=%s&email=deanna_abshire@proxymail.eu&code=1152464b80a61728' % (hashvalue, hashtype)).text
-    if len(response) != 0:
-        return response
-    else:
-        return False
+    response = requests.get(
+        f'http://md5decrypt.net/Api/api.php?hash={hashvalue}&hash_type={hashtype}&email=deanna_abshire@proxymail.eu&code=1152464b80a61728'
+    ).text
+    return response if response != "" else False
 
 print ('''\033[1;97m_  _ ____ ____ _  _    ___  _  _ ____ ___ ____ ____
 |__| |__| [__  |__|    |__] |  | [__   |  |___ |__/
@@ -82,68 +80,62 @@ def crack(hashvalue):
     result = False
     if len(hashvalue) == 32:
         if not file:
-            print ('%s Hash function : MD5' % info)
+            print(f'{info} Hash function : MD5')
         for api in md5:
-            r = api(hashvalue, 'md5')
-            if r:
+            if r := api(hashvalue, 'md5'):
                 return r
     elif len(hashvalue) == 40:
         if not file:
-            print ('%s Hash function : SHA1' % info)
+            print(f'{info} Hash function : SHA1')
         for api in sha1:
-            r = api(hashvalue, 'sha1')
-            if r:
+            if r := api(hashvalue, 'sha1'):
                 return r
     elif len(hashvalue) == 64:
         if not file:
-            print ('%s Hash function : SHA-256' % info)
+            print(f'{info} Hash function : SHA-256')
         for api in sha256:
-            r = api(hashvalue, 'sha256')
-            if r:
+            if r := api(hashvalue, 'sha256'):
                 return r
     elif len(hashvalue) == 96:
         if not file:
-            print ('%s Hash function : SHA-384' % info)
+            print(f'{info} Hash function : SHA-384')
         for api in sha384:
-            r = api(hashvalue, 'sha384')
-            if r:
+            if r := api(hashvalue, 'sha384'):
                 return r
     elif len(hashvalue) == 128:
         if not file:
-            print ('%s Hash function : SHA-512' % info)
+            print(f'{info} Hash function : SHA-512')
         for api in sha512:
-            r = api(hashvalue, 'sha512')
-            if r:
+            if r := api(hashvalue, 'sha512'):
                 return r
     else:
-        if not file:
-            print ('%s This hash type is not supported.' % bad)
-            quit()
-        else:
+        if file:
             return False
+        print(f'{bad} This hash type is not supported.')
+        quit()
 
 result = {}
 
 def threaded(hashvalue):
-    resp = crack(hashvalue)
-    if resp:
-        print (hashvalue + ' : ' + resp)
+    if resp := crack(hashvalue):
+        print(f'{hashvalue} : {resp}')
         result[hashvalue] = resp
 
 def grepper(directory):
     os.system('''grep -Pr "[a-f0-9]{128}|[a-f0-9]{96}|[a-f0-9]{64}|[a-f0-9]{40}|[a-f0-9]{32}" %s --exclude=\*.{png,jpg,jpeg,mp3,mp4,zip,gz} |
         grep -Po "[a-f0-9]{128}|[a-f0-9]{96}|[a-f0-9]{64}|[a-f0-9]{40}|[a-f0-9]{32}" >> %s/%s.txt''' % (directory, cwd, directory.split('/')[-1]))
-    print ('%s Results saved in %s.txt' % (info, directory.split('/')[-1]))
+    print(f"{info} Results saved in {directory.split('/')[-1]}.txt")
 
 def miner(file):
     lines = []
     found = set()
     with open(file, 'r') as f:
-        for line in f:
-            lines.append(line.strip('\n'))
+        lines.extend(line.strip('\n') for line in f)
     for line in lines:
-        matches = re.findall(r'[a-f0-9]{128}|[a-f0-9]{96}|[a-f0-9]{64}|[a-f0-9]{40}|[a-f0-9]{32}', line)
-        if matches:
+        if matches := re.findall(
+            r'[a-f0-9]{128}|[a-f0-9]{96}|[a-f0-9]{64}|[a-f0-9]{40}|[a-f0-9]{32}',
+            line,
+        ):
             for match in matches:
                 found.add(match)
     print ('%s Hashes found: %i' % (info, len(found)))
@@ -154,11 +146,10 @@ def miner(file):
             print('%s Progress: %i/%i' % (info, i + 1, len(found)), end='\r')
 
 def single(args):
-    result = crack(args.hash)
-    if result:
+    if result := crack(args.hash):
         print (result)
     else:
-        print ('%s Hash was not found in any database.' % bad)
+        print(f'{bad} Hash was not found in any database.')
 
 if directory:
     try:
@@ -171,10 +162,10 @@ elif file:
         miner(file)
     except KeyboardInterrupt:
         pass
-    with open('cracked-%s' % file.split('/')[-1], 'w+') as f:
+    with open(f"cracked-{file.split('/')[-1]}", 'w+') as f:
         for hashvalue, cracked in result.items():
-            f.write(hashvalue + ':' + cracked + '\n')
-    print ('%s Results saved in cracked-%s' % (info, file.split('/')[-1]))
+            f.write(f'{hashvalue}:{cracked}' + '\n')
+    print(f"{info} Results saved in cracked-{file.split('/')[-1]}")
 
 elif args.hash:
     single(args)

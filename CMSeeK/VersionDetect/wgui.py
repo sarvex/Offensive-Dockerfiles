@@ -13,13 +13,10 @@ def start(ga_content):
     regex = re.findall(r'WebGUI (.*)', ga_content)
     if regex != []:
 
-        if ')' in regex[0]:
-            # This could be done by regex right? if you know how to do so proudly create an issue and show me the way ;)
-            version = regex[0].replace(')','')
-        else:
-            version = regex[0]
-
-        cmseek.success('WebGUI version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected')
+        version = regex[0].replace(')','') if ')' in regex[0] else regex[0]
+        cmseek.success(
+            f'WebGUI version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected'
+        )
         return version
     else:
         cmseek.error('Version detection failed!')

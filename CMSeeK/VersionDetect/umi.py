@@ -16,7 +16,9 @@ def start(url, ua):
         if 'X-CMS-Version' in tail:
             regex = re.findall(r'X-CMS-Version: (.*)', tail)
     if regex != []:
-        cmseek.success('UMI.CMS version ' + cmseek.bold + cmseek.fgreen + regex[0] + cmseek.cln + ' detected')
+        cmseek.success(
+            f'UMI.CMS version {cmseek.bold}{cmseek.fgreen}{regex[0]}{cmseek.cln} detected'
+        )
         return regex[0]
     else:
         cmseek.error('Version detection failed!')

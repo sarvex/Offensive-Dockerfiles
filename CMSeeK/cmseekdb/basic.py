@@ -50,7 +50,7 @@ grey = "\033[37m";
 cyan = "\033[36m";
 bold   = "\033[1m";
 
-def banner (txt):
+def banner(txt):
     # The sexy banner!!!
     global cmseek_version
     print(bold + fgreen + """
@@ -60,7 +60,7 @@ def banner (txt):
 """.format(lblue, fgreen, yellow, cmseek_version, red, white))
     if txt != "":
         print(whitebg + black + bold)
-        print(" [+]  " + txt + "  [+] " + cln)
+        print(f" [+]  {txt}  [+] {cln}")
     else:
         print(cln + bold + lbluebg + black + " Author: " + cln + bold + " https://twitter.com/r3dhax0r" + blackbg + white + "\n GitHub: " + cln + bold + " https://github.com/Tuhinshubhra \n" + cln + '\n')
     print(cln + "\n")
@@ -132,7 +132,7 @@ def statement(msg):
     # Print only if verbose
     global verbose
     if verbose == True:
-        print("[+] "  + msg)
+        print(f"[+] {msg}")
 
 def error(msg):
     print(bold + red + "[x] " + msg + cln) # switched to x from ❌ ..
@@ -164,12 +164,12 @@ def process_url(target):
         #     else:
         #         target = target + '/'
     else:
-        target = 'http://' + target
-        # if not target.endswith('/'):
-        #     if '.php' in target or '.html' in target or '.asp' in target or '.aspx' in target or '.htm' in target or '.py' in target or '.pl' in target:
-        #         target = target
-        #     else:
-        #         target = target + '/'
+        target = f'http://{target}'
+            # if not target.endswith('/'):
+            #     if '.php' in target or '.html' in target or '.asp' in target or '.aspx' in target or '.htm' in target or '.py' in target or '.pl' in target:
+            #         target = target
+            #     else:
+            #         target = target + '/'
     init_result_dir(target)
     update_log('url', str(target))
     return target
@@ -178,17 +178,18 @@ def process_url(target):
 def targetinp(iserr):
     # site url validator and stuff...
     if iserr != "":
-        target = input(iserr + " : " + cln).lower()
+        target = input(f"{iserr} : {cln}").lower()
     else:
         target = input("Enter target site (https://example.tld): ").lower()
-    if "://" in target and "http" in target:
-        if not target.endswith('/'):
-            target = target + '/'
-        init_result_dir(target)
-        update_log('url', str(target))
-        return target
-    else:
-        return targetinp(red + "Invalid URL format, correct format (https://example.tld)")
+    if "://" not in target or "http" not in target:
+        return targetinp(
+            f"{red}Invalid URL format, correct format (https://example.tld)"
+        )
+    if not target.endswith('/'):
+        target = f'{target}/'
+    init_result_dir(target)
+    update_log('url', str(target))
+    return target
 
 def init_result_dir(url):
     ### initiate log directory and stuffs
@@ -210,37 +211,31 @@ def init_result_dir(url):
 
     ## check if the log directory exist
     global cmseek_dir
-    result_dir = cmseek_dir + "/Result/" + url
-    json_log = result_dir + '/cms.json'
+    result_dir = f"{cmseek_dir}/Result/{url}"
+    json_log = f'{result_dir}/cms.json'
     if not os.path.isdir(result_dir):
         try:
             os.makedirs(result_dir)
-            f = open(json_log,"w+")
-            f.write("")
-            f.close()
-            # print('directory created')
+            with open(json_log,"w+") as f:
+                f.write("")
+                    # print('directory created')
         except OSError as exc: # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
-    else:
-        # Directory exists, check for json log
-        if not os.path.isfile(json_log):
-            f = open(json_log,"w+")
-            f.write("")
-            f.close()
-        else:
-            # read log and save it to a variable
-            f = open(json_log,"r")
-            log_cont = f.read()
-            if log_cont != "":
-                try:
-                    global log
-                    log = log_cont
-                except ValueError:
-                    # invalid json file... clear it i guess
-                    f = open(json_log,"w+")
+    elif os.path.isfile(json_log):
+        # read log and save it to a variable
+        f = open(json_log,"r")
+        log_cont = f.read()
+        if log_cont != "":
+            try:
+                global log
+                log = log_cont
+            except ValueError:
+                with open(json_log,"w+") as f:
                     f.write("")
-                    f.close()
+    else:
+        with open(json_log,"w+") as f:
+            f.write("")
     global log_dir
     log_dir = result_dir
     update_log('last_scanned', str(datetime.now()))
@@ -256,31 +251,29 @@ def update_log(key,value):
 def clear_log():
     # Clear Result directory
     global cmseek_dir
-    resdir = cmseek_dir + '/Result'
+    resdir = f'{cmseek_dir}/Result'
     if os.path.isdir(resdir):
         shutil.rmtree(resdir)
         os.makedirs(resdir)
         success('Result directory cleared successfully!')
-        bye()
     else:
         warning('Results directory not found!')
-        bye()
+
+    bye()
 
 def handle_quit(end_prog = True):
     # in case of unwanted exit this function should take care of writing the json log
     global log_dir
     if log_dir is not "":
-        log_file = log_dir + "/cms.json"
+        log_file = f"{log_dir}/cms.json"
         # print(log_file)
         global log
-        f = open(log_file,"w+")
-        json_l = json.loads(log)
-        log_to_write = json.dumps(json_l, sort_keys=True, indent=4)
-        f.write(log_to_write)
-        # print('written: ' + log)
-        f.close()
+        with open(log_file,"w+") as f:
+            json_l = json.loads(log)
+            log_to_write = json.dumps(json_l, sort_keys=True, indent=4)
+            f.write(log_to_write)
         print('\n')
-        # info('Log saved in: ' + fgreen + bold + log_file + cln)
+            # info('Log saved in: ' + fgreen + bold + log_file + cln)
     if end_prog == True:
         bye()
     else:
@@ -290,8 +283,8 @@ def update_brute_cache():
     clearscreen()
     banner("Updating Bruteforce Cache")
     global cmseek_dir
-    brute_dir = cmseek_dir + "/cmsbrute"
-    brute_cache = brute_dir + '/cache.json'
+    brute_dir = f"{cmseek_dir}/cmsbrute"
+    brute_cache = f'{brute_dir}/cache.json'
     cache_json = {}
     if not os.path.isdir(brute_dir):
         try:
@@ -307,7 +300,7 @@ def update_brute_cache():
     modulen = []
     for f in py_files:
         if f.endswith('.py') and f != '__init__.py':
-            fo = open(brute_dir + '/' + f, 'r')
+            fo = open(f'{brute_dir}/{f}', 'r')
             mod_cnt = fo.read()
             if 'cmseekbruteforcemodule' in mod_cnt and 'Bruteforce module' in mod_cnt:
                 n = []
@@ -315,17 +308,16 @@ def update_brute_cache():
                 if n != [] and n[0] != "":
                     modules.append(f)
                     modulen.append(n[0])
-    if not modules == [] and modulen != []:
-        info('Found ' + str(len(modules)) + ' modules.. Writting cache')
+    if modules and modulen != []:
+        info(f'Found {len(modules)} modules.. Writting cache')
         for index,module in enumerate(modules):
             module = module.replace('.py','')
             cache_json[module] = modulen[index]
-        tuh = open(brute_cache, 'w+')
-        tuh.write(json.dumps(cache_json))
-        tuh.close()
+        with open(brute_cache, 'w+') as tuh:
+            tuh.write(json.dumps(cache_json))
         success('The following modules has been added to the cache: \n')
-        for ma in cache_json:
-            print('> ' + bold + ma + '.py ' + cln + '--->   ' + bold + cache_json[ma] + cln + ' Bruteforce Module')
+        for ma, value in cache_json.items():
+            print(f'> {bold}{ma}.py {cln}--->   {bold}{value}{cln} Bruteforce Module')
         print('\n')
         result('Cache Updated! Enjoy CMSeeK with new modules ;)','')
     else:
@@ -341,21 +333,18 @@ def update():
     info("Checking for updates")
     get_version = getsource('https://raw.githubusercontent.com/Tuhinshubhra/CMSeeK/master/current_version',randomua('generate'))
     if get_version[0] != '1':
-        error('Could not get latest version, Error: ' + get_version[1])
-        bye()
+        error(f'Could not get latest version, Error: {get_version[1]}')
     else:
         latest_version = get_version[1].replace('\n','')
         serv_version = int(latest_version.replace('.',''))
-        info("CMSeeK Version: " + cmseek_version)
-        success("Latest Version: " + latest_version)
+        info(f"CMSeeK Version: {cmseek_version}")
+        success(f"Latest Version: {latest_version}")
+        print('\n')
         if my_version > serv_version:
-            print('\n')
             error("Either you or me (The Developer) messed things up.\n" + cln + "[↓] Download the proper version from: " + fgreen + bold + GIT_URL)
         elif my_version == serv_version:
-            print('\n')
             result("CMSeeK is up to date, Thanks for checking update tho.. It's a good practise",'')
         else:
-            print('\n')
             #success("Update available!")
             success("Update available!")
             update_me = input("[#] Do you want to update now? (y/n): ")
@@ -364,12 +353,17 @@ def update():
                 succes = False
                 try:
                     global cmseek_dir
-                    lock_file = cmseek_dir + "/.git/index.lock"
+                    lock_file = f"{cmseek_dir}/.git/index.lock"
                     if os.path.isfile(lock_file):
                         statement("Removing index.lock file from .git directory")
                         # Solve the index.lock issue
                         os.remove(lock_file)
-                    subprocess.run(("git checkout . && git pull %s HEAD") % GIT_URL, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    subprocess.run(
+                        f"git checkout . && git pull {GIT_URL} HEAD",
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    )
                     #os.system("git checkout . && git pull %s HEAD" % GIT_URL)
                     vt = open('current_version', 'r')
                     v_test = int(vt.read().replace('\n','').replace('.',''))
@@ -381,39 +375,37 @@ def update():
                 except:
                     print("Unexpected error:", sys.exc_info()[0])
                     raise
-                    error("Automatic Update Failed! Pleae download manually from: " + cln + GIT_URL)
-                if succes == True:
+                if succes:
                     result("CMSeeK Updated To Latest Version! Enjoy", "")
                 else:
                     warning(bold + orange + "Update might be not successful.. Download manually from: " + cln + GIT_URL)
             else:
                 print('\n')
                 warning("Automatic Update Terminated!")
-                info("Update Manually from: " + fgreen + bold + GIT_URL + cln)
-        bye()
+                info(f"Update Manually from: {fgreen}{bold}{GIT_URL}{cln}")
+
+    bye()
 
 
 def savebrute(url,adminurl,username,password):
     # write the results to a result file
-    if url != "" and adminurl != "" and username != "" and password != "":
-        global log_dir
-        brute_file = log_dir + '/bruteforce_result_' + username + '_.txt'
-        old_file = log_dir + '/bruteforce_result_' + username + '_.old.txt'
-        brute_result = "### CMSeeK Bruteforce Result\n\n\nSite: " + url + "\n\nLogin URL: " + adminurl + "\n\nUsername: " + username + "\n\nPassword: " + password
-        print('\n\n') # Pretty sloppy move there ;-;
-        if not os.path.isfile(brute_file):
-            # No previous bruteforce result file Found
-            f = open(brute_file, 'w+')
+    if url == "" or adminurl == "" or username == "" or password == "":
+        return
+    global log_dir
+    brute_file = f'{log_dir}/bruteforce_result_{username}_.txt'
+    old_file = f'{log_dir}/bruteforce_result_{username}_.old.txt'
+    brute_result = "### CMSeeK Bruteforce Result\n\n\nSite: " + url + "\n\nLogin URL: " + adminurl + "\n\nUsername: " + username + "\n\nPassword: " + password
+    print('\n\n') # Pretty sloppy move there ;-;
+    if not os.path.isfile(brute_file):
+        with open(brute_file, 'w+') as f:
             f.write(brute_result)
-            f.close()
-            success('Credentials stored at: ' + bold + brute_file + cln)
-        else:
-            os.rename(brute_file, old_file)
-            info("Old result file found and moved to: " + old_file)
-            f = open(brute_file, 'w+')
+        success(f'Credentials stored at: {bold}{brute_file}{cln}')
+    else:
+        os.rename(brute_file, old_file)
+        info(f"Old result file found and moved to: {old_file}")
+        with open(brute_file, 'w+') as f:
             f.write(brute_result)
-            f.close()
-            success('New credentials stored at: ' + bold + brute_file + cln)
+        success(f'New credentials stored at: {bold}{brute_file}{cln}')
 
 
 def getsource(url, ua): ## (url, useragent) return type: ({0/1/2},{error/source code/error}, {empty/http headers/empty})
@@ -427,11 +419,9 @@ def getsource(url, ua): ## (url, useragent) return type: ({0/1/2},{error/source 
         ## final check..
         if '?ckattempt=' in raw_source[1]:
             error('Failed to evade Browser validation, detection results might not be accurate!')
-            return raw_source
         else:
             success('Browser validation successfully evaded..')
-            return raw_source
-
+        return raw_source
     if 'src="/aes.js"' in raw_source[1] and '?i=1' in raw_source[1]:
         warning('Browser validation detected.. trying to evade...')
         ## This can be evaded by using googlebot as user agent so let's do that
@@ -439,21 +429,20 @@ def getsource(url, ua): ## (url, useragent) return type: ({0/1/2},{error/source 
         ## final check..
         if '?i=' in raw_source[1] and 'src="/aes.js"' in raw_source[1]:
             error('Failed to evade Browser validation, detection results might not be accurate!')
-            return raw_source
         else:
             success('Browser validation successfully evaded..')
-            return raw_source
-    if raw_source[2] == '403':
-        if 'Abuse: Your connection is not welcome due to: Bot UA' in raw_source[3] or 'Warning: 199' in raw_source[3]:
-            warning('UA validation detected.. trying to evade...')
-            raw_source = getrawsource(url, 'Googlebot/2.1 (+http://www.google.com/bot.html)')
-            if 'Bot UA' in raw_source[2] and 'Warning: 199' in raw_source[2]:
-                error('Failed to evade UA validation, detection results might not be accurate!')
-                return raw_source
-            else:
-                success('UA validation successfully evaded..')
-                return raw_source
-
+        return raw_source
+    if raw_source[2] == '403' and (
+        'Abuse: Your connection is not welcome due to: Bot UA' in raw_source[3]
+        or 'Warning: 199' in raw_source[3]
+    ):
+        warning('UA validation detected.. trying to evade...')
+        raw_source = getrawsource(url, 'Googlebot/2.1 (+http://www.google.com/bot.html)')
+        if 'Bot UA' in raw_source[2] and 'Warning: 199' in raw_source[2]:
+            error('Failed to evade UA validation, detection results might not be accurate!')
+        else:
+            success('UA validation successfully evaded..')
+        return raw_source
     return raw_source
 
 def check_url(url,ua):
@@ -469,8 +458,8 @@ def check_url(url,ua):
         return '0'
 
 def wpbrutesrc(url, user, pwd):
-    redirecto = url + '/wp-admin/'
-    url = url + '/wp-login.php'
+    redirecto = f'{url}/wp-admin/'
+    url = f'{url}/wp-login.php'
     ua = randomua('generatenewuaeverytimetobesafeiguess')
     try:
         ckreq = urllib.request.Request(
@@ -484,22 +473,18 @@ def wpbrutesrc(url, user, pwd):
             scode = response.read().decode()
             headers = str(response.info())
             rurl = response.geturl()
-            r = ['1', scode, headers, rurl] ## 'success code', 'source code', 'http headers'
-            return r
+            return ['1', scode, headers, rurl]
     except Exception as e:
         e = str(e)
-        r = ['2', e, '', ''] ## 'error code', 'error message', 'empty'
-        return r
+        return ['2', e, '', '']
 
 def randomua(rnd = None): # Randomized or User defined useragent
     a = ["Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.0 Safari/532.5","Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/534.14 (KHTML, like Gecko) Chrome/9.0.601.0 Safari/534.14","Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.27 (KHTML, like Gecko) Chrome/12.0.712.0 Safari/534.27","Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.24 Safari/535.1","Mozilla/5.0 (Windows; U; Windows NT 5.1; tr; rv:1.9.2.8) Gecko/20100722 Firefox/3.6.8 ( .NET CLR 3.5.30729; .NET4.0E)","Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1","Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1","Mozilla/5.0 (Windows NT 6.1; WOW64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1","Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6","Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0.1) Gecko/20100101 Firefox/10.0.1","Mozilla/5.0 (Windows NT 6.1; rv:12.0) Gecko/20120403211507 Firefox/12.0","Mozilla/5.0 (Windows NT 6.1; WOW64; rv:15.0) Gecko/20120427 Firefox/15.0a1","Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)","Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)","Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; Trident/6.0)","Opera/9.80 (Windows NT 6.1; U; es-ES) Presto/2.9.181 Version/12.00","Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5","Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Chrome/9.0.597.15 Safari/534.13","Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10.5; en-US; rv:1.9.2.15) Gecko/20110303 Firefox/3.6.15","Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:2.0.1) Gecko/20100101 Firefox/4.0.1","Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/418.8 (KHTML, like Gecko) Safari/419.3","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2; rv:10.0.1) Gecko/20100101 Firefox/10.0.1","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.55.3 (KHTML, like Gecko) Version/5.1.3 Safari/534.53.10","Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.20 Safari/535.1","Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.24 (KHTML, like Gecko) Ubuntu/10.10 Chromium/12.0.703.0 Chrome/12.0.703.0 Safari/534.24","Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.9) Gecko/20100915 Gentoo Firefox/3.6.9","Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.1.16) Gecko/20120421 Gecko Firefox/11.0","Mozilla/5.0 (X11; Linux i686; rv:12.0) Gecko/20100101 Firefox/12.0","Opera/9.80 (X11; Linux x86_64; U; pl) Presto/2.7.62 Version/11.00","Mozilla/5.0 (X11; U; Linux x86_64; us; rv:1.9.1.19) Gecko/20110430 shadowfox/7.0 (like Firefox/7.0)"]
 
-    if rnd == None:
+    if rnd is None:
         b = input("Enter custom UserAgent or simply press enter to use a random one: ")
         if b == "":
             b = random.choice(a)
-        else:
-            pass
     else:
         b = random.choice(a)
 

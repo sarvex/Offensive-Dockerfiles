@@ -27,8 +27,8 @@ import cmseekdb.result as result
 def main_proc(site,cua):
     cmseek.clearscreen()
     cmseek.banner("CMS Detection And Deep Scan")
-    cmseek.info("Scanning Site: " + site)
-    cmseek.statement("User Agent: " + cua)
+    cmseek.info(f"Scanning Site: {site}")
+    cmseek.statement(f"User Agent: {cua}")
     cmseek.statement("Collecting Headers and Page Source for Analysis")
     init_source = cmseek.getsource(site, cua)
     if init_source[0] != '1':
@@ -37,9 +37,13 @@ def main_proc(site,cua):
     else:
         scode = init_source[1]
         headers = init_source[2]
-        if site != init_source[3] and site + '/' != init_source[3]:
-            cmseek.info('Target redirected to: ' + cmseek.bold + cmseek.fgreen + init_source[3] + cmseek.cln)
-            follow_redir = input('[#] Set ' + cmseek.bold + cmseek.fgreen + init_source[3] + cmseek.cln + ' as target? (y/n): ')
+        if site != init_source[3] and f'{site}/' != init_source[3]:
+            cmseek.info(
+                f'Target redirected to: {cmseek.bold}{cmseek.fgreen}{init_source[3]}{cmseek.cln}'
+            )
+            follow_redir = input(
+                f'[#] Set {cmseek.bold}{cmseek.fgreen}{init_source[3]}{cmseek.cln} as target? (y/n): '
+            )
             if follow_redir.lower() == 'y':
                 site = init_source[3]
                 cmseek.statement("Reinitiating Headers and Page Source for Analysis")
@@ -99,7 +103,9 @@ def main_proc(site,cua):
             cms_detected = '1'
 
     if cms_detected == '1':
-        cmseek.success('CMS Detected, CMS ID: ' + cmseek.bold + cmseek.fgreen + cms + cmseek.cln + ', Detection method: ' + cmseek.bold + cmseek.lblue + detection_method + cmseek.cln)
+        cmseek.success(
+            f'CMS Detected, CMS ID: {cmseek.bold}{cmseek.fgreen}{cms}{cmseek.cln}, Detection method: {cmseek.bold}{cmseek.lblue}{detection_method}{cmseek.cln}'
+        )
         cmseek.update_log('detection_param', detection_method)
         cmseek.update_log('cms_id', cms) # update log
         cmseek.statement('Getting CMS info from database') # freaking typo
@@ -107,7 +113,6 @@ def main_proc(site,cua):
         if cms_info['deeps'] == '1':
             # cmseek.success('Starting ' + cmseek.bold + cms_info['name'] + ' deep scan' + cmseek.cln)
             advanced.start(cms, site, cua, ga, scode, ga_content)
-            return
         elif cms_info['vd'] == '1':
             cmseek.success('Starting version detection')
             cms_version = '0' # Failsafe measure
@@ -117,13 +122,13 @@ def main_proc(site,cua):
             result.target(site)
             result.cms(cms_info['name'],cms_version,cms_info['url'])
             cmseek.update_log('cms_name', cms_info['name']) # update log
-            if cms_version != '0' and cms_version != None:
+            if cms_version not in ['0', None]:
                 cmseek.update_log('cms_version', cms_version) # update log
             cmseek.update_log('cms_url', cms_info['url']) # update log
             comptime = round(time.time() - cmseek.cstart, 2)
             log_dir = cmseek.log_dir
             if log_dir is not "":
-                log_file = log_dir + "/cms.json"
+                log_file = f"{log_dir}/cms.json"
             result.end(str(cmseek.total_requests), str(comptime), log_file)
             '''
             cmseek.result('Target: ', site)
@@ -135,7 +140,6 @@ def main_proc(site,cua):
             cmseek.result("CMS URL: ", cms_info['url'])
             cmseek.update_log('cms_url', cms_info['url']) # update log
             '''
-            return
         else:
             # nor version detect neither DeepScan available
             cmseek.clearscreen()
@@ -145,7 +149,7 @@ def main_proc(site,cua):
             comptime = round(time.time() - cmseek.cstart, 2)
             log_dir = cmseek.log_dir
             if log_dir is not "":
-                log_file = log_dir + "/cms.json"
+                log_file = f"{log_dir}/cms.json"
             result.end(str(cmseek.total_requests), str(comptime), log_file)
             '''
             cmseek.result('Target: ', site)
@@ -154,7 +158,6 @@ def main_proc(site,cua):
             cmseek.result("CMS URL: ", cms_info['url'])
             cmseek.update_log('cms_url', cms_info['url']) # update log
             '''
-            return
     else:
         print('\n')
         cmseek.error('CMS Detection failed, if you know the cms please help me improve CMSeeK by reporting the cms along with the target by creating an issue')
@@ -169,5 +172,4 @@ def main_proc(site,cua):
 
 N.B: Create issue only if you are sure, please avoid spamming!
         '''.format(cmseek.cmseek_version, site, cmseek.bold, cmseek.cln, cmseek.bold, cmseek.cln, cmseek.bold, cmseek.cln))
-        return
     return

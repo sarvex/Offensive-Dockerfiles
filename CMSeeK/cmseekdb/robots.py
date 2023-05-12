@@ -8,7 +8,7 @@
 import re
 import cmseekdb.basic as cmseek
 def check(url, ua):
-    robots = url + '/robots.txt'
+    robots = f'{url}/robots.txt'
     robots_source = cmseek.getsource(robots, ua)
     # print(robots_source[1])
     if robots_source[0] == '1' and robots_source[1] != '':
@@ -80,7 +80,7 @@ def check(url, ua):
         if t3_regex != None:
             return ['1', 'tp3']
 
-        return ['0','']
     else:
         cmseek.error('robots.txt not found or empty!')
-        return ['0','']
+
+    return ['0','']

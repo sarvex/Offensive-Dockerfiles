@@ -17,7 +17,9 @@ def start(url, ua):
         if 'X-Garden-Version: Vanilla' in tail:
             regex = re.findall(r'X-Garden-Version: Vanilla (\d.*)', tail)
     if regex != []:
-        cmseek.success('Vanilla version ' + cmseek.bold + cmseek.fgreen + regex[0] + cmseek.cln + ' detected')
+        cmseek.success(
+            f'Vanilla version {cmseek.bold}{cmseek.fgreen}{regex[0]}{cmseek.cln} detected'
+        )
         return regex[0]
     else:
         cmseek.error('Version detection failed!')

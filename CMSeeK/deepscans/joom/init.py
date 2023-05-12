@@ -35,7 +35,7 @@ def start(id, url, ua, ga, source):
     joom_vulns = jcv[2]
 
     # README.txt
-    readmesrc = cmseek.getsource(url + '/README.txt', ua)
+    readmesrc = cmseek.getsource(f'{url}/README.txt', ua)
     if readmesrc[0] != '1': ## something went wrong while getting the source codes
         cmseek.statement("Couldn't get readme file's source code most likely it's not present")
         readmefile = '0'
@@ -94,15 +94,12 @@ def start(id, url, ua, ga, source):
         cmseek.update_log('joomla_debug_mode', 'disabled')
 
     if readmefile == '1':
-        cmseek.result('Readme file: ', url + '/README.txt')
-        cmseek.update_log('joomla_readme_file', url + '/README.txt')
+        cmseek.result('Readme file: ', f'{url}/README.txt')
+        cmseek.update_log('joomla_readme_file', f'{url}/README.txt')
 
     if admin[0] > 0:
         cmseek.result('Admin URL: ', url + admin[1][0])
-        admin_log = ''
-        for adm in admin[1]:
-            admin_log += url + '/' + adm + ','
-            # print(cmseek.bold + cmseek.fgreen + "   [B] " + cmseek.cln + url + '/' + adm)
+        admin_log = ''.join(f'{url}/{adm},' for adm in admin[1])
         cmseek.update_log('joomla_backup_files', admin_log)
         print('\n')
 
@@ -111,7 +108,7 @@ def start(id, url, ua, ga, source):
         cmseek.success('Open directory url: ')
         dirs = ''
         for dir in directories[1]:
-            dirs += url + '/' + dir + ','
+            dirs += f'{url}/{dir},'
             print(cmseek.bold + cmseek.fgreen + "   [>] " + cmseek.cln + url + dir)
         cmseek.update_log('directory_listing', dirs)
         print('\n')
@@ -121,7 +118,7 @@ def start(id, url, ua, ga, source):
         cmseek.success('Backup URLs: ')
         bkup_log = ''
         for backup in backups[1]:
-            bkup_log += url + '/' + backup + ','
+            bkup_log += f'{url}/{backup},'
             print(cmseek.bold + cmseek.fgreen + "   [B] " + cmseek.cln + url + '/' + backup)
         cmseek.update_log('joomla_backup_files', bkup_log)
         print('\n')
@@ -131,7 +128,7 @@ def start(id, url, ua, ga, source):
         cmseek.success('Config URLs: ')
         conf_log = ''
         for config in configs[1]:
-            conf_log += url + '/' + config + ','
+            conf_log += f'{url}/{config},'
             print(cmseek.bold + cmseek.fgreen + "   [c] " + cmseek.cln + url + '/' + config)
         cmseek.update_log('joomla_config_files', conf_log)
         print('\n')

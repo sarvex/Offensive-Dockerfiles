@@ -11,9 +11,11 @@ joom_backups = []
 
 def check_backup(url,file,ua):
     global joom_bak_found, joom_backups
-    file_check = cmseek.check_url(url + '/' + file, ua)
+    file_check = cmseek.check_url(f'{url}/{file}', ua)
     if file_check == '1':
-        cmseek.success('Potential backup file found: ' + cmseek.bold + cmseek.fgreen + file + cmseek.cln)
+        cmseek.success(
+            f'Potential backup file found: {cmseek.bold}{cmseek.fgreen}{file}{cmseek.cln}'
+        )
         joom_bak_found += 1
         joom_backups.append(file)
 

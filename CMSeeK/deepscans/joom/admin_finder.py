@@ -11,9 +11,11 @@ joom_admins = []
 
 def check_admin(url,file,ua):
     global joom_admin_found, joom_admins
-    file_check = cmseek.check_url(url + '/' + file, ua)
+    file_check = cmseek.check_url(f'{url}/{file}', ua)
     if file_check == '1':
-        cmseek.success('Admin login page found: ' + cmseek.bold + cmseek.fgreen + url + '/' + file + cmseek.cln)
+        cmseek.success(
+            f'Admin login page found: {cmseek.bold}{cmseek.fgreen}{url}/{file}{cmseek.cln}'
+        )
         joom_admin_found += 1
         joom_admins.append(file)
 

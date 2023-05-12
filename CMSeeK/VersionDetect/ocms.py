@@ -16,7 +16,9 @@ def start(url, ua):
         if 'Server' in tail and 'OpenCms' in tail:
             regex = re.findall(r'Server: OpenCms/(.*)', tail)
     if regex != []:
-        cmseek.success('OpenCms version ' + cmseek.bold + cmseek.fgreen + regex[0] + cmseek.cln + ' detected')
+        cmseek.success(
+            f'OpenCms version {cmseek.bold}{cmseek.fgreen}{regex[0]}{cmseek.cln} detected'
+        )
         return regex[0]
     else:
         cmseek.error('Version detection failed!')

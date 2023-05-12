@@ -16,7 +16,9 @@ def start(url, ua):
         if 'MicrosoftSharePointTeamServices' in tail:
             regex = re.findall(r'MicrosoftSharePointTeamServices: (.*)', tail)
     if regex != []:
-        cmseek.success('SharePoint version ' + cmseek.bold + cmseek.fgreen + regex[0] + cmseek.cln + ' detected')
+        cmseek.success(
+            f'SharePoint version {cmseek.bold}{cmseek.fgreen}{regex[0]}{cmseek.cln} detected'
+        )
         return regex[0]
     else:
         cmseek.error('Version detection failed!')

@@ -14,7 +14,9 @@ def start(ga_content, url, ua):
     regex = re.findall(r'ophal (.*?) \(ophal.org\)', ga_content)
     if regex != []:
         version = regex[0]
-        cmseek.success('Ophal version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected')
+        cmseek.success(
+            f'Ophal version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected'
+        )
         return version
     else:
         kurama = cmseek.getsource(url, ua) # copypasta
@@ -24,7 +26,9 @@ def start(ga_content, url, ua):
             if 'x-powered-by' in tail:
                 regex = re.findall(r'x-powered-by: Ophal (.*?) \(ophal.org\)', tail)
         if regex != []:
-            cmseek.success('Ophal version ' + cmseek.bold + cmseek.fgreen + regex[0] + cmseek.cln + ' detected')
+            cmseek.success(
+                f'Ophal version {cmseek.bold}{cmseek.fgreen}{regex[0]}{cmseek.cln} detected'
+            )
             return regex[0]
         else:
             cmseek.error('Version detection failed!')

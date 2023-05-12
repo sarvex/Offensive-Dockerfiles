@@ -21,7 +21,9 @@ def start(source, url, ua):
                         if kek != []:
                             # coding this was actually fun idk why ;--;
                             version = kek[0]
-                            cmseek.success('FlexCMP version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected from source')
+                            cmseek.success(
+                                f'FlexCMP version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected from source'
+                            )
                             return version
     else:
         kurama = cmseek.getsource(url, ua)
@@ -31,7 +33,9 @@ def start(source, url, ua):
             if 'X-Powered-By' in tail and 'FlexCMP' in tail:
                 regex = re.findall(r'X-Powered-By: FlexCMP Application Server \[v\. (.*?) - ', tail)
         if regex != []:
-            cmseek.success('FlexCMP version ' + cmseek.bold + cmseek.fgreen + regex[0] + cmseek.cln + ' detected from header')
+            cmseek.success(
+                f'FlexCMP version {cmseek.bold}{cmseek.fgreen}{regex[0]}{cmseek.cln} detected from header'
+            )
             return regex[0]
         else:
             cmseek.error('Version detection failed!')

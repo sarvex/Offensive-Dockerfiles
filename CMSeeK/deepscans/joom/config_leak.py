@@ -11,9 +11,11 @@ joom_confs = []
 
 def check_config(url,file,ua):
     global joom_conf_found, joom_confs
-    file_check = cmseek.check_url(url + '/' + file, ua)
+    file_check = cmseek.check_url(f'{url}/{file}', ua)
     if file_check == '1':
-        cmseek.success('Potential configuration file found: ' + cmseek.bold + cmseek.fgreen + file + cmseek.cln)
+        cmseek.success(
+            f'Potential configuration file found: {cmseek.bold}{cmseek.fgreen}{file}{cmseek.cln}'
+        )
         joom_conf_found += 1
         joom_confs.append(file)
 

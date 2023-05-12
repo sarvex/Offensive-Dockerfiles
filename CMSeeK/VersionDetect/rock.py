@@ -14,7 +14,9 @@ def start(ga_content):
     regex = re.findall(r'rock v(.*)', ga_content)
     if regex != []:
         version = regex[0]
-        cmseek.success('Rock RMS version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected')
+        cmseek.success(
+            f'Rock RMS version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected'
+        )
         return version
     else:
         cmseek.error('Version detection failed!')

@@ -11,7 +11,9 @@ import re
 def start(ga_content):
     regex = re.findall(r'XpressEngine (.*)', ga_content)
     if regex != []:
-        cmseek.success('XpressEngine version ' + cmseek.bold + cmseek.fgreen + regex[0] + cmseek.cln + ' detected')
+        cmseek.success(
+            f'XpressEngine version {cmseek.bold}{cmseek.fgreen}{regex[0]}{cmseek.cln} detected'
+        )
         return regex[0]
     else:
         cmseek.error('Version detection failed!')

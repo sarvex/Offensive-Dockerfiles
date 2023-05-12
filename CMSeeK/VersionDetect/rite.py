@@ -14,7 +14,9 @@ def start(ga_content):
     regex = re.findall(r'ritecms (.*)', ga_content)
     if regex != []:
         version = regex[0]
-        cmseek.success('RiteCMS version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected')
+        cmseek.success(
+            f'RiteCMS version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected'
+        )
         return version
     else:
         cmseek.error('Version detection failed!')

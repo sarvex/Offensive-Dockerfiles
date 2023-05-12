@@ -13,7 +13,9 @@ def start(ga_content):
     regex = re.findall(r'Beehive Forum (.*)', ga_content)
     if regex != []:
         version = regex[0]
-        cmseek.success('Beehive Forum version ' + cmseek.bold + cmseek.fgreen + version + cmseek.cln + ' detected')
+        cmseek.success(
+            f'Beehive Forum version {cmseek.bold}{cmseek.fgreen}{version}{cmseek.cln} detected'
+        )
         return version
     else:
         cmseek.error('Version detection failed!')

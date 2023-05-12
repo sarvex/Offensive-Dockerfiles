@@ -42,7 +42,7 @@ if args.update:
     cmseek.update()
 if args.version:
     print('\n\n')
-    cmseek.info("CMSeeK Version: " + cmseek.cmseek_version)
+    cmseek.info(f"CMSeeK Version: {cmseek.cmseek_version}")
     cmseek.bye()
 if args.user_agent is not None:
     cua = args.user_agent
@@ -56,7 +56,7 @@ if args.url is not None:
     s = args.url
     target = cmseek.process_url(s)
     if target != '0':
-        if cua == None:
+        if cua is None:
             cua = cmseek.randomua()
         core.main_proc(target,cua)
         cmseek.handle_quit()
@@ -73,7 +73,7 @@ elif args.list is not None:
         cmseek.error('Invalid path! CMSeeK is quitting')
         cmseek.bye()
     if sites_list != []:
-        if cua == None:
+        if cua is None:
             cua = cmseek.randomua()
         for s in sites_list:
             target = cmseek.process_url(s)
@@ -83,7 +83,7 @@ elif args.list is not None:
                 input('\n\n\tPress ' + cmseek.bold + cmseek.fgreen + '[ENTER]' + cmseek.cln + ' to continue') # maybe a fix? idk
             else:
                 print('\n')
-                cmseek.warning('Invalid URL: ' + cmseek.bold + s + cmseek.cln + ' Skipping to next')
+                cmseek.warning(f'Invalid URL: {cmseek.bold}{s}{cmseek.cln} Skipping to next')
         print('\n')
         cmseek.result('Finished Scanning all targets.. result has been saved under respective target directories','')
     else:
@@ -116,7 +116,7 @@ elif selone == "1":
     cmseek.clearscreen()
     cmseek.banner("CMS Detection And Deep Scan")
     site = cmseek.targetinp("") # Get The User input
-    if cua == None:
+    if cua is None:
         cua = cmseek.randomua()
     core.main_proc(site,cua)
     cmseek.handle_quit()
@@ -139,7 +139,7 @@ elif selone == '2':
         cmseek.info('Treating input as URL list')
         sites_list = sites.split(',')
     if sites_list != []:
-        if cua == None:
+        if cua is None:
             cua = cmseek.randomua()
         for s in sites_list:
             target = cmseek.process_url(s)
@@ -149,7 +149,7 @@ elif selone == '2':
                 input('\n\n\tPress ' + cmseek.bold + cmseek.fgreen + '[ENTER]' + cmseek.cln + ' to continue') # maybe a fix? idk
             else:
                 print('\n')
-                cmseek.warning('Invalid URL: ' + cmseek.bold + s + cmseek.cln + ' Skipping to next')
+                cmseek.warning(f'Invalid URL: {cmseek.bold}{s}{cmseek.cln} Skipping to next')
         print('\n')
         cmseek.result('Finished Scanning all targets.. result has been saved under respective target directories','')
     else:
@@ -160,8 +160,8 @@ elif selone == "3":
     cmseek.clearscreen()
     cmseek.banner("CMS Bruteforce Module")
     ## I think this is a modular approch
-    brute_dir = os.getcwd() + "/cmsbrute"
-    brute_cache = brute_dir + '/cache.json'
+    brute_dir = f"{os.getcwd()}/cmsbrute"
+    brute_cache = f'{brute_dir}/cache.json'
     if not os.path.isdir(brute_dir):
         cmseek.error("bruteforce directory missing! did you mess up with it? Anyways CMSeek is exiting")
         cmseek.bye()
@@ -171,15 +171,13 @@ elif selone == "3":
         read_cache = open(brute_cache, 'r')
         b_cache = read_cache.read()
         cache = json.loads(b_cache)
-        brute_list = []
-        for c in cache:
-            brute_list.append(c)
+        brute_list = list(cache)
         brute_list = sorted(brute_list)
-        for i,x in enumerate(brute_list):
+        for i, x in enumerate(brute_list):
             n = x
-            mod = "cmsbrute." + x
-            exec(n + " = importlib.import_module(mod)")
-            print('['+ str(i) +'] ' + cache[x])
+            mod = f"cmsbrute.{x}"
+            exec(f"{n} = importlib.import_module(mod)")
+            print(f'[{str(i)}] {cache[x]}')
         print(cmseek.cln + '\n')
         cmstobrute = input('Select CMS: ')
         try:
